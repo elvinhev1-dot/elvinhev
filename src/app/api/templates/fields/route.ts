@@ -1,23 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getTemplate } from '@/lib/storage';
 
 export const runtime = 'nodejs';
 
 /**
  * GET /api/templates/fields?id=<templateId>
- * Returns the field schema (labels, placeholders, input types) the
- * frontend uses to build the dynamic form for a given template.
+ * In the stateless version, templates (including their field schemas)
+ * are stored client-side in localStorage. This endpoint is kept for
+ * API compatibility but returns 404 — the frontend no longer calls it.
  */
 export async function GET(req: NextRequest) {
   const id = req.nextUrl.searchParams.get('id');
   if (!id) {
     return NextResponse.json({ error: 'Missing required "id" query parameter.' }, { status: 400 });
   }
-
-  const template = getTemplate(id);
-  if (!template) {
-    return NextResponse.json({ error: 'Template not found. It may have been deleted.' }, { status: 404 });
-  }
-
-  return NextResponse.json({ template });
+  return NextResponse.json(
+    { error: 'Template not found. Templates are managed client-side in this deployment.' },
+    { status: 404 }
+  );
 }
